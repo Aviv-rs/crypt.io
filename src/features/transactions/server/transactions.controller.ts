@@ -1,21 +1,36 @@
-import { desc } from "drizzle-orm";
+import { asc, desc } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/api/database";
 import { transactions as transactionsTable } from "@/api/database/schema";
-import { parseGetTransactionsParams } from "./transactions.schema";
+import {
+  parseGetTransactionsParams,
+  type SortableColumn,
+} from "./transactions.schema";
 import type { GetTransactionsResponse } from "../types/transactions.types";
+
+function buildOrderBy(
+  sort: SortableColumn,
+  direction: "asc" | "desc",
+): SQL[] {
+  const column = transactionsTable[sort];
+  const directional = direction === "asc" ? asc(column) : desc(column);
+  return [directional, desc(transactionsTable.id)];
+}
 
 async function getTransactions(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url);
-    const { page, pageSize } = parseGetTransactionsParams(url.searchParams);
+    const { page, pageSize, sort, dir } = parseGetTransactionsParams(
+      url.searchParams,
+    );
     const offset = (page - 1) * pageSize;
 
     const [rows, total] = await Promise.all([
       db
         .select()
         .from(transactionsTable)
-        .orderBy(desc(transactionsTable.date))
+        .orderBy(...buildOrderBy(sort, dir))
         .limit(pageSize)
         .offset(offset),
       db.$count(transactionsTable),
