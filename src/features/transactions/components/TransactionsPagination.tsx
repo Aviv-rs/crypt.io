@@ -1,9 +1,10 @@
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
@@ -14,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { indexRoute } from "@/router";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
 
@@ -87,13 +90,10 @@ export function TransactionsPagination({
               </PaginationItem>
             ) : (
               <PaginationItem key={item}>
-                <PaginationLink
-                  href="#"
+                <PaginationPageLink
+                  pageNumber={item}
                   isActive={item === safePage}
-                  onClick={goToPage(item)}
-                >
-                  {item}
-                </PaginationLink>
+                />
               </PaginationItem>
             ),
           )}
@@ -129,5 +129,36 @@ export function TransactionsPagination({
         </Select>
       </div>
     </div>
+  );
+}
+
+function PaginationPageLink({
+  pageNumber,
+  isActive,
+}: {
+  pageNumber: number;
+  isActive: boolean;
+}) {
+  return (
+    <Button
+      variant={isActive ? "outline" : "ghost"}
+      size="icon"
+      className={cn(
+        isActive &&
+          "border-primary text-primary bg-primary/10 hover:bg-primary/15 hover:text-primary",
+      )}
+      nativeButton={false}
+      render={
+        <Link
+          to={indexRoute.fullPath}
+          search={(prev) => ({ ...prev, page: pageNumber })}
+          aria-current={isActive ? "page" : undefined}
+          data-slot="pagination-link"
+          data-active={isActive}
+        >
+          {pageNumber}
+        </Link>
+      }
+    />
   );
 }

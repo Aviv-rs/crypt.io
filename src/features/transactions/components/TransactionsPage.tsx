@@ -8,6 +8,7 @@ import { transactionsQueryOptions } from "../transactions.queries";
 import type { FilterEntry } from "../transactions.types";
 import type { SortableColumn } from "../transactions.types";
 import { FilterBar } from "./FilterBar";
+import { TransactionsCardList } from "./TransactionsCardList";
 import { TransactionsTable } from "./TransactionsTable";
 import { TransactionsPagination } from "./TransactionsPagination";
 
@@ -74,12 +75,19 @@ export function TransactionsPage() {
               No transactions found.
             </div>
           ) : (
-            <TransactionsTable
-              transactions={transactions}
-              sort={sort}
-              dir={dir}
-              onSortChange={handleSortChange}
-            />
+            <>
+              <div className="hidden md:block">
+                <TransactionsTable
+                  transactions={transactions}
+                  sort={sort}
+                  dir={dir}
+                  onSortChange={handleSortChange}
+                />
+              </div>
+              <div className="md:hidden">
+                <TransactionsCardList transactions={transactions} />
+              </div>
+            </>
           )}
         </section>
 

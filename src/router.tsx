@@ -9,10 +9,12 @@ import { AppLayout } from "@/components/AppLayout";
 import { NotFound } from "@/components/NotFound";
 import { PageLoader } from "@/components/PageLoader";
 import { TransactionsPage } from "@/features/transactions/components/TransactionsPage";
+import { transactionsQueryOptions } from "@/features/transactions/transactions.queries";
 import {
   TRANSACTIONS_SEARCH_DEFAULTS,
   transactionsSearchSchema,
 } from "@/features/transactions/transactions.types";
+import { queryClient } from "@/queryClient";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -29,6 +31,10 @@ const indexRoute = createRoute({
   validateSearch: transactionsSearchSchema,
   search: {
     middlewares: [stripSearchParams(TRANSACTIONS_SEARCH_DEFAULTS)],
+  },
+  loaderDeps: ({ search }) => search,
+  loader: ({ deps }) => {
+    void queryClient.prefetchQuery(transactionsQueryOptions(deps));
   },
   component: TransactionsPage,
 });

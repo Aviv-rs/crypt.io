@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { ListFilter, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -53,6 +53,7 @@ type Props = {
 
 export function FilterBar({ filters, onChange }: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const [draftKey, setDraftKey] = useState<FilterableColumn>("method");
   const [draftValue, setDraftValue] = useState("");
 
@@ -74,8 +75,24 @@ export function FilterBar({ filters, onChange }: Props) {
     onChange(filters.filter((entry) => entry.key !== key));
   };
 
+  const filterCount = filters.length;
+
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
+      <Button
+        variant="outline"
+        size="sm"
+        className="md:hidden self-start"
+        onClick={() => setMobileExpanded((open) => !open)}
+        aria-expanded={mobileExpanded}
+      >
+        <ListFilter data-icon="inline-start" />
+        Filters{filterCount > 0 ? ` (${filterCount})` : ""}
+      </Button>
+
+      <div
+        className={`flex flex-wrap items-center gap-2 ${mobileExpanded ? "flex" : "hidden"} md:flex`}
+      >
       {filters.map((entry) => (
         <span
           key={entry.key}
@@ -143,6 +160,7 @@ export function FilterBar({ filters, onChange }: Props) {
           </Button>
         </PopoverContent>
       </Popover>
+      </div>
     </div>
   );
 }
