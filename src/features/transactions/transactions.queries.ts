@@ -1,14 +1,17 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import type {
+  FilterEntry,
   GetTransactionsResponse,
   SortableColumn,
-} from "./types/transactions.types";
+  SortDirection,
+} from "./transactions.types";
 
 export type GetTransactionsRequest = {
   page: number;
   pageSize: number;
   sort: SortableColumn;
-  dir: "asc" | "desc";
+  dir: SortDirection;
+  filters: FilterEntry[];
 };
 
 async function fetchTransactions(
@@ -20,6 +23,9 @@ async function fetchTransactions(
   url.searchParams.set("pageSize", String(params.pageSize));
   url.searchParams.set("sort", params.sort);
   url.searchParams.set("dir", params.dir);
+  if (params.filters.length > 0) {
+    url.searchParams.set("filters", JSON.stringify(params.filters));
+  }
 
   const response = await fetch(url, { signal });
   if (!response.ok) {

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, asc, desc, gte, like, lte, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/api/database";
@@ -6,17 +6,25 @@ import { transactions as transactionsTable } from "@/api/database/schema";
 import {
   parseGetTransactionsParams,
   type FilterEntry,
-} from "./transactions.schema";
-import type {
-  GetTransactionsResponse,
-  SortableColumn,
-} from "../types/transactions.types";
+  type GetTransactionsResponse,
+  type SortableColumn,
+  type SortDirection,
+} from "../transactions.types";
+
+const SORT_COLUMN_MAP = {
+  date: transactionsTable.date,
+  method: transactionsTable.method,
+  network: transactionsTable.network,
+  buyAmount: transactionsTable.buyAmount,
+  sellAmount: transactionsTable.sellAmount,
+  feeAmount: transactionsTable.feeAmount,
+} as const;
 
 function buildOrderBy(
   sort: SortableColumn,
-  direction: "asc" | "desc",
+  direction: SortDirection,
 ): SQL[] {
-  const column = transactionsTable[sort];
+  const column = SORT_COLUMN_MAP[sort];
   const directional = direction === "asc" ? asc(column) : desc(column);
   return [directional, desc(transactionsTable.id)];
 }
@@ -24,13 +32,13 @@ function buildOrderBy(
 function entryToCondition(entry: FilterEntry): SQL {
   switch (entry.key) {
     case "method":
-      return eq(transactionsTable.method, entry.value);
+      return like(transactionsTable.method, `%${entry.value}%`);
     case "network":
-      return eq(transactionsTable.network, entry.value);
+      return like(transactionsTable.network, `%${entry.value}%`);
     case "buyCurrency":
-      return eq(transactionsTable.buyCurrency, entry.value);
+      return like(transactionsTable.buyCurrency, `%${entry.value}%`);
     case "sellCurrency":
-      return eq(transactionsTable.sellCurrency, entry.value);
+      return like(transactionsTable.sellCurrency, `%${entry.value}%`);
     case "dateFrom":
       return gte(transactionsTable.date, entry.value);
     case "dateTo":

@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import type { Transaction } from "../types/transactions.types";
+import type { Transaction } from "../transactions.types";
 import { formatAmount } from "../utils/format";
 import { getMethodTone } from "./MethodBadge";
 

@@ -1,7 +1,7 @@
 import "@/assets/styles/index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppLayout } from "@/components/AppLayout";
-import { TransactionsPage } from "@/features/transactions/components/TransactionsPage";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "@/router";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,9 +15,7 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout>
-        <TransactionsPage />
-      </AppLayout>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }

@@ -7,7 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SortableColumn, Transaction } from "../types/transactions.types";
+import type {
+  SortableColumn,
+  SortDirection,
+  Transaction,
+} from "../transactions.types";
 import {
   formatAddress,
   formatAmount,
@@ -24,7 +28,7 @@ type ColumnDefinition = {
 };
 
 const COLUMNS: ColumnDefinition[] = [
-  { label: "Type", sortKey: "method" },
+  { label: "Method", sortKey: "method" },
   { label: "Asset" },
   { label: "Counterparty" },
   { label: "Network", sortKey: "network" },
@@ -48,7 +52,7 @@ function getCounterpartyAddress(transaction: Transaction): string | null {
 type SortHeaderProps = {
   column: ColumnDefinition;
   activeSort: SortableColumn;
-  activeDir: "asc" | "desc";
+  activeDir: SortDirection;
   onSortChange: (column: SortableColumn) => void;
 };
 
@@ -95,7 +99,7 @@ function SortHeader({
 type Props = {
   transactions: Transaction[];
   sort: SortableColumn;
-  dir: "asc" | "desc";
+  dir: SortDirection;
   onSortChange: (column: SortableColumn) => void;
 };
 
@@ -109,8 +113,11 @@ export function TransactionsTable({
     <Table className="border-separate border-spacing-y-1.5">
       <TableHeader>
         <TableRow className="hover:bg-transparent border-0 [&>th]:border-0">
-          {COLUMNS.map((column) => (
-            <TableHead key={column.label} className={headerCellClass}>
+          {COLUMNS.map((column, idx) => (
+            <TableHead
+              key={column.label}
+              className={cn(`${headerCellClass} ${idx === 0 ? "pl-4" : ""}`)}
+            >
               <SortHeader
                 column={column}
                 activeSort={sort}
