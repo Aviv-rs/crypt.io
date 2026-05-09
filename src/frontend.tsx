@@ -16,5 +16,9 @@ const app = (
   </StrictMode>
 );
 
-// https://bun.com/docs/bundler/hot-reloading#import-meta-hot-data
-(import.meta.hot.data.root ??= createRoot(elem)).render(app);
+// `import.meta.hot.data` must not be accessed via a variable (Bun HMR).
+if (import.meta.hot) {
+  (import.meta.hot.data.root ??= createRoot(elem)).render(app);
+} else {
+  createRoot(elem).render(app);
+}

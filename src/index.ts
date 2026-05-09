@@ -13,7 +13,7 @@ const server = serve({
   port: Number.isFinite(listenPort) ? listenPort : 3000,
   routes: {
     ...transactionsRoutes,
-    "/*": index,
+    "/": index,
   },
 
   development: process.env.NODE_ENV !== "production" && {
