@@ -1,10 +1,10 @@
 import { serve } from "bun";
 import index from "./index.html";
-import { transactionsRoute } from "@/features/transactions/server/transactions.controller";
+import { transactionsRoutes } from "@/features/transactions/server/transactions.controller";
 
 const server = serve({
   routes: {
-    "/api/transactions": transactionsRoute,
+    ...transactionsRoutes,
     "/*": index,
   },
 

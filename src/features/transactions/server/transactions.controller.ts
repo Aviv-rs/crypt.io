@@ -10,6 +10,34 @@ import {
   type SortableColumn,
   type SortDirection,
 } from "../transactions.types";
+import {
+  buildCsvHeader,
+  buildCsvRow,
+} from "./export-transactions-to-csv";
+
+const EXPORT_CHUNK_SIZE = 1000;
+
+const EXPORT_COLUMNS = [
+  "id",
+  "method",
+  "date",
+  "buyAmount",
+  "buyCurrency",
+  "buyToken",
+  "sellAmount",
+  "sellCurrency",
+  "sellToken",
+  "feeAmount",
+  "feeCurrency",
+  "feeToken",
+  "network",
+  "txHash",
+  "blockHeight",
+  "smartContract",
+  "senderAddress",
+  "receiverAddress",
+  "comments",
+] as const satisfies readonly (keyof typeof transactionsTable._.columns)[];
 
 const SORT_COLUMN_MAP = {
   date: transactionsTable.date,
@@ -98,6 +126,68 @@ async function getTransactions(request: Request): Promise<Response> {
   }
 }
 
-export const transactionsRoute = {
-  GET: getTransactions,
+async function exportTransactions(request: Request): Promise<Response> {
+  try {
+    const url = new URL(request.url);
+    const { sort, dir, filters } = parseGetTransactionsParams(url.searchParams);
+    const scope = url.searchParams.get("scope") === "all" ? "all" : "view";
+    const whereClause = scope === "all" ? undefined : buildWhere(filters);
+    const orderBy = buildOrderBy(sort, dir);
+
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        controller.enqueue(encoder.encode(buildCsvHeader(EXPORT_COLUMNS)));
+
+        let offset = 0;
+        while (true) {
+          const baseQuery = db.select().from(transactionsTable);
+          const chunk = await (whereClause
+            ? baseQuery.where(whereClause)
+            : baseQuery)
+            .orderBy(...orderBy)
+            .limit(EXPORT_CHUNK_SIZE)
+            .offset(offset);
+
+          if (chunk.length === 0) break;
+
+          for (const row of chunk) {
+            const values = EXPORT_COLUMNS.map((column) => row[column]);
+            controller.enqueue(encoder.encode(buildCsvRow(values)));
+          }
+
+          if (chunk.length < EXPORT_CHUNK_SIZE) break;
+          offset += EXPORT_CHUNK_SIZE;
+        }
+
+        controller.close();
+      },
+    });
+
+    const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    return new Response(stream, {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="transactions-${scope}-${yyyymmdd}.csv"`,
+        "cache-control": "no-store",
+      },
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json(
+        { error: "Invalid query parameters", issues: error.issues },
+        { status: 400 },
+      );
+    }
+    if (error instanceof Error && error.message === "filters must be valid JSON") {
+      return Response.json({ error: error.message }, { status: 400 });
+    }
+    console.error("[GET /api/transactions/export]", error);
+    return Response.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+export const transactionsRoutes = {
+  "/api/transactions": { GET: getTransactions },
+  "/api/transactions/export": { GET: exportTransactions },
 };
