@@ -4,19 +4,35 @@ import { Download } from "lucide-react";
 import { TopBar } from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { transactionsQueryOptions } from "../transactions.queries";
+import type { SortableColumn } from "../types/transactions.types";
 import { TransactionsTable } from "./TransactionsTable";
 import { TransactionsPagination } from "./TransactionsPagination";
+
+const DEFAULT_SORT: SortableColumn = "date";
+const DEFAULT_DIR: "asc" | "desc" = "desc";
 
 export function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
+  const [sort, setSort] = useState<SortableColumn>(DEFAULT_SORT);
+  const [dir, setDir] = useState<"asc" | "desc">(DEFAULT_DIR);
 
   const { data, isPending, isError, error, isFetching } = useQuery(
-    transactionsQueryOptions({ page, pageSize }),
+    transactionsQueryOptions({ page, pageSize, sort, dir }),
   );
 
   const transactions = data?.transactions ?? [];
   const total = data?.total ?? 0;
+
+  const handleSortChange = (column: SortableColumn) => {
+    if (column === sort) {
+      setDir((current) => (current === "asc" ? "desc" : "asc"));
+    } else {
+      setSort(column);
+      setDir("desc");
+    }
+    setPage(1);
+  };
 
   return (
     <>
@@ -51,7 +67,12 @@ export function TransactionsPage() {
               No transactions found.
             </div>
           ) : (
-            <TransactionsTable transactions={transactions} />
+            <TransactionsTable
+              transactions={transactions}
+              sort={sort}
+              dir={dir}
+              onSortChange={handleSortChange}
+            />
           )}
         </section>
 

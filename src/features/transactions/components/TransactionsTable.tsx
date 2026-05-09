@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -6,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Transaction } from "../types/transactions.types";
+import type { SortableColumn, Transaction } from "../types/transactions.types";
 import {
   formatAddress,
   formatAmount,
@@ -15,15 +16,21 @@ import {
 } from "../utils/format";
 import { AssetCell } from "./AssetCell";
 import { MethodBadge } from "./MethodBadge";
+import { cn } from "@/lib/utils";
 
-const COLUMN_LABELS = [
-  "Type",
-  "Asset",
-  "Counterparty",
-  "Network",
-  "Fee",
-  "Date",
-] as const;
+type ColumnDefinition = {
+  label: string;
+  sortKey?: SortableColumn;
+};
+
+const COLUMNS: ColumnDefinition[] = [
+  { label: "Type", sortKey: "method" },
+  { label: "Asset" },
+  { label: "Counterparty" },
+  { label: "Network", sortKey: "network" },
+  { label: "Fee", sortKey: "feeAmount" },
+  { label: "Date", sortKey: "date" },
+];
 
 const headerCellClass =
   "text-[10px] uppercase tracking-wider text-muted-foreground font-medium";
@@ -38,18 +45,78 @@ function getCounterpartyAddress(transaction: Transaction): string | null {
   return transaction.senderAddress ?? transaction.receiverAddress;
 }
 
+type SortHeaderProps = {
+  column: ColumnDefinition;
+  activeSort: SortableColumn;
+  activeDir: "asc" | "desc";
+  onSortChange: (column: SortableColumn) => void;
+};
+
+function SortHeader({
+  column,
+  activeSort,
+  activeDir,
+  onSortChange,
+}: SortHeaderProps) {
+  if (!column.sortKey) {
+    return <span>{column.label}</span>;
+  }
+  const isActive = activeSort === column.sortKey;
+  const ArrowIcon = !isActive
+    ? ChevronsUpDown
+    : activeDir === "asc"
+      ? ChevronUp
+      : ChevronDown;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSortChange(column.sortKey!)}
+      aria-sort={
+        isActive ? (activeDir === "asc" ? "ascending" : "descending") : "none"
+      }
+      className={cn(
+        "inline-flex items-center gap-1 hover:text-foreground transition-colors",
+        isActive && "text-foreground",
+      )}
+    >
+      <span>{column.label}</span>
+      <ArrowIcon
+        className={cn(
+          "size-3 shrink-0",
+          !isActive && "text-muted-foreground/60",
+        )}
+        strokeWidth={2.25}
+      />
+    </button>
+  );
+}
+
+type Props = {
+  transactions: Transaction[];
+  sort: SortableColumn;
+  dir: "asc" | "desc";
+  onSortChange: (column: SortableColumn) => void;
+};
+
 export function TransactionsTable({
   transactions,
-}: {
-  transactions: Transaction[];
-}) {
+  sort,
+  dir,
+  onSortChange,
+}: Props) {
   return (
     <Table className="border-separate border-spacing-y-1.5">
       <TableHeader>
         <TableRow className="hover:bg-transparent border-0 [&>th]:border-0">
-          {COLUMN_LABELS.map((label) => (
-            <TableHead key={label} className={headerCellClass}>
-              {label}
+          {COLUMNS.map((column) => (
+            <TableHead key={column.label} className={headerCellClass}>
+              <SortHeader
+                column={column}
+                activeSort={sort}
+                activeDir={dir}
+                onSortChange={onSortChange}
+              />
             </TableHead>
           ))}
         </TableRow>

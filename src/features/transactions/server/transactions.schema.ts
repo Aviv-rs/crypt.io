@@ -1,15 +1,5 @@
 import { z } from "zod";
-
-export const SORTABLE_COLUMNS = [
-  "date",
-  "method",
-  "network",
-  "buyAmount",
-  "sellAmount",
-  "feeAmount",
-] as const;
-
-export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
+import { SORTABLE_COLUMNS } from "../types/transactions.types";
 
 export const getTransactionsParamsSchema = z.object({
   page: z.coerce.number().int().positive().default(1),

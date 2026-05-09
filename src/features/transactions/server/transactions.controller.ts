@@ -3,11 +3,11 @@ import type { SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/api/database";
 import { transactions as transactionsTable } from "@/api/database/schema";
-import {
-  parseGetTransactionsParams,
-  type SortableColumn,
-} from "./transactions.schema";
-import type { GetTransactionsResponse } from "../types/transactions.types";
+import { parseGetTransactionsParams } from "./transactions.schema";
+import type {
+  GetTransactionsResponse,
+  SortableColumn,
+} from "../types/transactions.types";
 
 function buildOrderBy(
   sort: SortableColumn,

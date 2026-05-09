@@ -1,9 +1,14 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
-import type { GetTransactionsResponse } from "./types/transactions.types";
+import type {
+  GetTransactionsResponse,
+  SortableColumn,
+} from "./types/transactions.types";
 
 export type GetTransactionsRequest = {
   page: number;
   pageSize: number;
+  sort: SortableColumn;
+  dir: "asc" | "desc";
 };
 
 async function fetchTransactions(
@@ -13,6 +18,8 @@ async function fetchTransactions(
   const url = new URL("/api/transactions", window.location.origin);
   url.searchParams.set("page", String(params.page));
   url.searchParams.set("pageSize", String(params.pageSize));
+  url.searchParams.set("sort", params.sort);
+  url.searchParams.set("dir", params.dir);
 
   const response = await fetch(url, { signal });
   if (!response.ok) {

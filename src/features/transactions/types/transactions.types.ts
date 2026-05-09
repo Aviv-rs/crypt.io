@@ -10,3 +10,14 @@ export type GetTransactionsResponse = {
   page: number;
   pageSize: number;
 };
+
+export const SORTABLE_COLUMNS = [
+  "date",
+  "method",
+  "network",
+  "buyAmount",
+  "sellAmount",
+  "feeAmount",
+] as const;
+
+export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
