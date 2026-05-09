@@ -83,6 +83,21 @@ src/
 - Row click expands a detail panel (txHash, blockHeight, smart contract, comments, *Token columns, full sender/receiver).
 - Export menu offers "Current view" (sort + filters honored) and "Full dataset" (sort honored, filters ignored).
 
+## Process
+
+This project was built spec-driven. Before writing code I wrote down the product, the architecture, the tokens + UI conventions, the implementation rules, and an ordered build plan that breaks the work into small verifiable units. Each unit ends with a tracker entry that captures what landed and any reversed decisions (e.g. "no router in v1" → "TanStack Router after URL state grew") so the *why* survives the diff.
+
+The spec lives in [`context/`](./context):
+
+- [`project-overview.md`](./context/project-overview.md) — product, goals, scope, success criteria
+- [`architecture.md`](./context/architecture.md) — stack, system boundaries, invariants, API surface
+- [`ui-context.md`](./context/ui-context.md) — theme, tokens, typography, layout patterns
+- [`code-standards.md`](./context/code-standards.md) — implementation rules and conventions
+- [`ai-workflow-rules.md`](./context/ai-workflow-rules.md) — workflow + scoping rules
+- [`progress-tracker.md`](./context/progress-tracker.md) — build order, completed units, architecture decisions, open questions
+
+`CLAUDE.md` and `.cursor/rules/` instruct AI tooling to read those files before suggesting code or proposing architecture changes — same context whether the next contributor opens Claude Code, Cursor, or just reads the docs themselves.
+
 ## Tests
 
 `bun test` covers two boundaries:
