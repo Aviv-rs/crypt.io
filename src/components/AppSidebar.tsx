@@ -12,7 +12,12 @@ import {
 import { BrandMark, BrandWordmark } from "@/components/Brand";
 
 const NAV_ITEMS = [
-  { id: "transfers", label: "Transfers", icon: ArrowLeftRight, href: "/" },
+  {
+    id: "transactions",
+    label: "Transactions",
+    icon: ArrowLeftRight,
+    href: "/",
+  },
 ] as const;
 
 export function AppSidebar() {
@@ -31,10 +36,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {NAV_ITEMS.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    isActive
-                    render={<a href={item.href} />}
-                  >
+                  <SidebarMenuButton isActive render={<a href={item.href} />}>
                     <item.icon />
                     <span>{item.label}</span>
                   </SidebarMenuButton>

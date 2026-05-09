@@ -93,73 +93,81 @@ export function FilterBar({ filters, onChange }: Props) {
       <div
         className={`flex flex-wrap items-center gap-2 ${mobileExpanded ? "flex" : "hidden"} md:flex`}
       >
-      {filters.map((entry) => (
-        <span
-          key={entry.key}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1 text-xs"
-        >
-          <span className="text-muted-foreground">
-            {FILTER_LABELS[entry.key]}:
-          </span>
-          <span className="font-medium">{formatFilterValue(entry)}</span>
-          <button
-            type="button"
-            aria-label={`Remove ${FILTER_LABELS[entry.key]} filter`}
-            onClick={() => removeFilter(entry.key)}
-            className="text-muted-foreground hover:text-foreground"
+        {filters.map((entry) => (
+          <span
+            key={entry.key}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1 text-xs"
           >
-            <X className="size-3" />
-          </button>
-        </span>
-      ))}
-
-      <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
-        <PopoverTrigger
-          render={
-            <Button variant="outline" size="sm">
-              <Plus data-icon="inline-start" />
-              Add filter
-            </Button>
-          }
-        />
-        <PopoverContent align="start" className="w-72 flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">Filter by</span>
-            <Select
-              value={draftKey}
-              onValueChange={(value) => {
-                setDraftKey(value as FilterableColumn);
-                setDraftValue("");
-              }}
+            <span className="text-muted-foreground">
+              {FILTER_LABELS[entry.key]}:
+            </span>
+            <span className="font-medium">{formatFilterValue(entry)}</span>
+            <button
+              type="button"
+              aria-label={`Remove ${FILTER_LABELS[entry.key]} filter`}
+              onClick={() => removeFilter(entry.key)}
+              className="text-muted-foreground hover:text-foreground"
             >
-              <SelectTrigger size="sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FILTER_KEYS.map((meta) => (
-                  <SelectItem key={meta.key} value={meta.key}>
-                    {meta.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">Value</span>
-            <Input
-              type={draftMeta.inputType}
-              value={draftValue}
-              onChange={(event) => setDraftValue(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") submitDraft();
-              }}
-            />
-          </div>
-          <Button size="sm" onClick={submitDraft} disabled={!draftValue.trim()}>
-            Apply filter
-          </Button>
-        </PopoverContent>
-      </Popover>
+              <X className="size-3" />
+            </button>
+          </span>
+        ))}
+
+        <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
+          <PopoverTrigger
+            render={
+              <Button variant="outline" size="sm">
+                <Plus data-icon="inline-start" />
+                Add filter
+              </Button>
+            }
+          />
+          <PopoverContent align="start" className="w-72 flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Filter by</span>
+              <Select
+                value={draftKey}
+                onValueChange={(value) => {
+                  setDraftKey(value as FilterableColumn);
+                  setDraftValue("");
+                }}
+              >
+                <SelectTrigger size="sm">
+                  <SelectValue>
+                    {(selectedKey: FilterableColumn) =>
+                      selectedKey != null ? FILTER_LABELS[selectedKey] : null
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {FILTER_KEYS.map((meta) => (
+                    <SelectItem key={meta.key} value={meta.key}>
+                      {meta.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground">Value</span>
+              <Input
+                type={draftMeta.inputType}
+                value={draftValue}
+                onChange={(event) => setDraftValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") submitDraft();
+                }}
+              />
+            </div>
+            <Button
+              size="sm"
+              onClick={submitDraft}
+              disabled={!draftValue.trim()}
+            >
+              Apply filter
+            </Button>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );

@@ -7,7 +7,9 @@ import type { FilterEntry, SortableColumn } from "../transactions.types";
 import { ExportMenu } from "./ExportMenu";
 import { FilterBar } from "./FilterBar";
 import { TransactionsCardList } from "./TransactionsCardList";
+import { TransactionsCardListSkeleton } from "./TransactionsCardListSkeleton";
 import { TransactionsTable } from "./TransactionsTable";
+import { TransactionsTableSkeleton } from "./TransactionsTableSkeleton";
 import { TransactionsPagination } from "./TransactionsPagination";
 
 export function TransactionsPage() {
@@ -40,7 +42,7 @@ export function TransactionsPage() {
 
   return (
     <>
-      <TopBar title="Transfers">
+      <TopBar title="Transactions">
         <ExportMenu sort={sort} dir={dir} filters={filters} />
       </TopBar>
 
@@ -48,20 +50,30 @@ export function TransactionsPage() {
         <FilterBar filters={filters} onChange={handleFiltersChange} />
 
         <section
-          className="rounded-lg border border-border bg-card overflow-hidden"
+          className="md:rounded-lg md:border md:border-border md:bg-card md:overflow-hidden"
           aria-busy={isFetching}
         >
           {isPending ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">
-              Loading transactions…
-            </div>
+            <>
+              <div className="hidden md:block">
+                <TransactionsTableSkeleton rowCount={pageSize > 25 ? 12 : 8} />
+              </div>
+              <div className="md:hidden">
+                <TransactionsCardListSkeleton rowCount={6} />
+              </div>
+            </>
           ) : isError ? (
             <div className="p-10 text-center text-sm text-destructive">
               Failed to load transactions: {error.message}
             </div>
           ) : transactions.length === 0 ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">
-              No transactions found.
+            <div className="p-10 text-center text-sm flex flex-col items-center gap-1">
+              <span className="text-foreground">
+                No transactions match these filters.
+              </span>
+              <span className="text-muted-foreground">
+                Try removing one or widening the date range.
+              </span>
             </div>
           ) : (
             <>
