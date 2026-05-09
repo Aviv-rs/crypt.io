@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Download } from "lucide-react";
 import { TopBar } from "@/components/TopBar";
-import { Button } from "@/components/ui/button";
 import { indexRoute } from "@/router";
 import { transactionsQueryOptions } from "../transactions.queries";
-import type { FilterEntry } from "../transactions.types";
-import type { SortableColumn } from "../transactions.types";
+import type { FilterEntry, SortableColumn } from "../transactions.types";
+import { ExportMenu } from "./ExportMenu";
 import { FilterBar } from "./FilterBar";
 import { TransactionsCardList } from "./TransactionsCardList";
 import { TransactionsTable } from "./TransactionsTable";
@@ -43,16 +41,7 @@ export function TransactionsPage() {
   return (
     <>
       <TopBar title="Transfers">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled
-          aria-disabled
-          title="Available once data loads"
-        >
-          <Download data-icon="inline-start" />
-          Export
-        </Button>
+        <ExportMenu sort={sort} dir={dir} filters={filters} />
       </TopBar>
 
       <main className="flex-1 px-4 md:px-6 py-6 flex flex-col gap-4">
