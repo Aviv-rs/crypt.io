@@ -1,0 +1,21 @@
+CREATE TABLE `Transactions` (
+	`id` integer PRIMARY KEY AUTOINCREMENT,
+	`method` text NOT NULL,
+	`buyAmount` real,
+	`buyCurrency` text,
+	`buyToken` text,
+	`sellAmount` real,
+	`sellCurrency` text,
+	`sellToken` text,
+	`feeAmount` real,
+	`feeCurrency` text,
+	`feeToken` text,
+	`date` integer NOT NULL,
+	`txHash` text,
+	`blockHeight` text,
+	`network` text,
+	`smartContract` text,
+	`senderAddress` text,
+	`receiverAddress` text,
+	`comments` text
+);
