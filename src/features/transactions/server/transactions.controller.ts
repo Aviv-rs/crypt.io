@@ -1,49 +1,44 @@
 import { desc } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/api/database";
-import { transactions } from "@/api/database/schema";
+import { transactions as transactionsTable } from "@/api/database/schema";
 import { parseGetTransactionsParams } from "./transactions.schema";
+import type { GetTransactionsResponse } from "../types/transactions.types";
 
-export type TransactionRow = typeof transactions.$inferSelect;
-
-export type GetTransactionsResponse = {
-  rows: TransactionRow[];
-  total: number;
-  page: number;
-  pageSize: number;
-};
-
-async function getTransactions(req: Request): Promise<Response> {
+async function getTransactions(request: Request): Promise<Response> {
   try {
-    const url = new URL(req.url);
+    const url = new URL(request.url);
     const { page, pageSize } = parseGetTransactionsParams(url.searchParams);
     const offset = (page - 1) * pageSize;
 
-    const [rows, totalRows] = await Promise.all([
+    const [rows, total] = await Promise.all([
       db
         .select()
-        .from(transactions)
-        .orderBy(desc(transactions.date))
+        .from(transactionsTable)
+        .orderBy(desc(transactionsTable.date))
         .limit(pageSize)
         .offset(offset),
-      db.$count(transactions),
+      db.$count(transactionsTable),
     ]);
 
     const body: GetTransactionsResponse = {
-      rows,
-      total: totalRows,
+      transactions: rows.map((row) => ({
+        ...row,
+        date: row.date.toISOString(),
+      })),
+      total,
       page,
       pageSize,
     };
     return Response.json(body);
-  } catch (err) {
-    if (err instanceof z.ZodError) {
+  } catch (error) {
+    if (error instanceof z.ZodError) {
       return Response.json(
-        { error: "Invalid query parameters", issues: err.issues },
+        { error: "Invalid query parameters", issues: error.issues },
         { status: 400 },
       );
     }
-    console.error("[GET /api/transactions]", err);
+    console.error("[GET /api/transactions]", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }
