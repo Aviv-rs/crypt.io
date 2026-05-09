@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts"
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts"
   },
   "dependencies": {
     "@base-ui/react": "1.4.1",
