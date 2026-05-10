@@ -9,7 +9,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { FilterEntry, SortDirection, SortableColumn } from "../transactions.types";
+import type {
+  FilterEntry,
+  SortDirection,
+  SortableColumn,
+} from "../transactions.types";
 
 type Props = {
   sort: SortableColumn;
@@ -35,14 +39,20 @@ function buildExportUrl(
 
 export function ExportMenu({ sort, dir, filters }: Props) {
   const triggerDownload = (scope: "view" | "all") => {
-    window.location.href = buildExportUrl(scope, { sort, dir, filters });
+    const anchor = document.createElement("a");
+    anchor.href = buildExportUrl(scope, { sort, dir, filters });
+    anchor.rel = "noopener";
+    anchor.download = "";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="outline" size="sm">
+          <Button size="sm">
             <Download data-icon="inline-start" />
             Export
           </Button>

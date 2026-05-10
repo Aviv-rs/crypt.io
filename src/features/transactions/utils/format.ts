@@ -1,17 +1,23 @@
 const DASH = "—";
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
+const dayFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "2-digit",
+  timeZone: "UTC",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
   minute: "2-digit",
+  hour12: false,
+  timeZone: "UTC",
 });
 
 export function formatDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return DASH;
-  return dateFormatter.format(date);
+  return `${dayFormatter.format(date)} · ${timeFormatter.format(date)}`;
 }
 
 export function formatAmount(
@@ -19,9 +25,9 @@ export function formatAmount(
   currency: string | null,
 ): string {
   if (amount === null) return DASH;
-  const formatted = amount.toLocaleString(undefined, {
+  const formatted = amount.toLocaleString("en-US", {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 4,
+    maximumFractionDigits: 8,
   });
   return currency ? `${formatted} ${currency.toUpperCase()}` : formatted;
 }

@@ -86,9 +86,6 @@ function SortHeader({
       variant="ghost"
       size="xs"
       onClick={() => onSortChange(column.sortKey!)}
-      aria-sort={
-        isActive ? (activeDir === "asc" ? "ascending" : "descending") : "none"
-      }
       className={cn(
         "-ml-1 h-auto px-1 py-0.5 font-medium text-muted-foreground hover:text-foreground hover:bg-transparent",
         isActive && "text-foreground",
@@ -96,7 +93,10 @@ function SortHeader({
     >
       <span>{column.label}</span>
       <ArrowIcon
-        className={cn("size-3 shrink-0", !isActive && "text-muted-foreground/60")}
+        className={cn(
+          "size-3 shrink-0",
+          !isActive && "text-muted-foreground/60",
+        )}
         strokeWidth={2.25}
       />
     </Button>
@@ -125,19 +125,31 @@ export function TransactionsTable({
     <Table className="border-separate border-spacing-y-2.5">
       <TableHeader>
         <TableRow className="hover:bg-transparent border-0 [&>th]:border-0">
-          {COLUMNS.map((column, columnIndex) => (
-            <TableHead
-              key={column.label}
-              className={`${headerCellClass} ${columnIndex === 0 ? "pl-4" : ""}`}
-            >
-              <SortHeader
-                column={column}
-                activeSort={sort}
-                activeDir={dir}
-                onSortChange={onSortChange}
-              />
-            </TableHead>
-          ))}
+          {COLUMNS.map((column, columnIndex) => {
+            const isActiveSort = column.sortKey === sort;
+            return (
+              <TableHead
+                key={column.label}
+                className={`${headerCellClass} ${columnIndex === 0 ? "pl-4" : ""}`}
+                aria-sort={
+                  column.sortKey
+                    ? isActiveSort
+                      ? dir === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : "none"
+                    : undefined
+                }
+              >
+                <SortHeader
+                  column={column}
+                  activeSort={sort}
+                  activeDir={dir}
+                  onSortChange={onSortChange}
+                />
+              </TableHead>
+            );
+          })}
         </TableRow>
       </TableHeader>
       <TableBody>
