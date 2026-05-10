@@ -12,7 +12,7 @@ import { TransactionsPage } from "@/features/transactions/components/Transaction
 import { transactionsQueryOptions } from "@/features/transactions/transactions.queries";
 import {
   TRANSACTIONS_SEARCH_DEFAULTS,
-  transactionsSearchSchema,
+  parseSearchParamsWithFallback,
 } from "@/features/transactions/transactions.types";
 import { queryClient } from "@/queryClient";
 
@@ -28,7 +28,7 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  validateSearch: transactionsSearchSchema,
+  validateSearch: parseSearchParamsWithFallback,
   search: {
     middlewares: [stripSearchParams(TRANSACTIONS_SEARCH_DEFAULTS)],
   },

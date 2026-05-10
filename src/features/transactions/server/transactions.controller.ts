@@ -1,4 +1,4 @@
-import { and, asc, desc, gte, like, lte, sql } from "drizzle-orm";
+import { and, asc, desc, gte, like, lt, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/api/database";
@@ -10,10 +10,7 @@ import {
   type SortableColumn,
   type SortDirection,
 } from "../transactions.types";
-import {
-  buildCsvHeader,
-  buildCsvRow,
-} from "./export-transactions-to-csv";
+import { buildCsvHeader, buildCsvRow } from "./export-transactions-to-csv";
 
 const EXPORT_CHUNK_SIZE = 1000;
 
@@ -48,10 +45,7 @@ const SORT_COLUMN_MAP = {
   feeAmount: transactionsTable.feeAmount,
 } as const;
 
-function buildOrderBy(
-  sort: SortableColumn,
-  direction: SortDirection,
-): SQL[] {
+function buildOrderBy(sort: SortableColumn, direction: SortDirection): SQL[] {
   const column = SORT_COLUMN_MAP[sort];
   const directional = direction === "asc" ? asc(column) : desc(column);
   return [directional, desc(transactionsTable.id)];
@@ -69,8 +63,10 @@ function entryToCondition(entry: FilterEntry): SQL {
       return like(transactionsTable.sellCurrency, `%${entry.value}%`);
     case "dateFrom":
       return gte(transactionsTable.date, entry.value);
-    case "dateTo":
-      return lte(transactionsTable.date, entry.value);
+    case "dateTo": {
+      const exclusiveEnd = new Date(entry.value.getTime() + 86_400_000); // Add 1 day to the end date to include the entire day
+      return lt(transactionsTable.date, exclusiveEnd);
+    }
   }
 }
 
@@ -101,7 +97,7 @@ async function getTransactions(request: Request): Promise<Response> {
       whereClause ? baseCountQuery.where(whereClause) : baseCountQuery,
     ]);
 
-    const body: GetTransactionsResponse = {
+    const transactionsResponse: GetTransactionsResponse = {
       transactions: rows.map((row) => ({
         ...row,
         date: row.date.toISOString(),
@@ -110,7 +106,7 @@ async function getTransactions(request: Request): Promise<Response> {
       page,
       pageSize,
     };
-    return Response.json(body);
+    return Response.json(transactionsResponse);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return Response.json(
@@ -118,7 +114,10 @@ async function getTransactions(request: Request): Promise<Response> {
         { status: 400 },
       );
     }
-    if (error instanceof Error && error.message === "filters must be valid JSON") {
+    if (
+      error instanceof Error &&
+      error.message === "filters must be valid JSON"
+    ) {
       return Response.json({ error: error.message }, { status: 400 });
     }
     console.error("[GET /api/transactions]", error);
@@ -142,9 +141,9 @@ async function exportTransactions(request: Request): Promise<Response> {
         let offset = 0;
         while (true) {
           const baseQuery = db.select().from(transactionsTable);
-          const chunk = await (whereClause
-            ? baseQuery.where(whereClause)
-            : baseQuery)
+          const chunk = await (
+            whereClause ? baseQuery.where(whereClause) : baseQuery
+          )
             .orderBy(...orderBy)
             .limit(EXPORT_CHUNK_SIZE)
             .offset(offset);
@@ -179,7 +178,10 @@ async function exportTransactions(request: Request): Promise<Response> {
         { status: 400 },
       );
     }
-    if (error instanceof Error && error.message === "filters must be valid JSON") {
+    if (
+      error instanceof Error &&
+      error.message === "filters must be valid JSON"
+    ) {
       return Response.json({ error: error.message }, { status: 400 });
     }
     console.error("[GET /api/transactions/export]", error);

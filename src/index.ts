@@ -14,6 +14,7 @@ const server = serve({
   routes: {
     ...transactionsRoutes,
     "/": index,
+    "/*": index,
   },
 
   development: process.env.NODE_ENV !== "production" && {

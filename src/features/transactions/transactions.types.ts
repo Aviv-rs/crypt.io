@@ -66,7 +66,11 @@ export const TRANSACTIONS_SEARCH_DEFAULTS: {
 };
 
 export const transactionsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(TRANSACTIONS_SEARCH_DEFAULTS.page),
+  page: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(TRANSACTIONS_SEARCH_DEFAULTS.page),
   pageSize: z.coerce
     .number()
     .int()
@@ -79,6 +83,48 @@ export const transactionsSearchSchema = z.object({
 });
 
 export type TransactionsSearch = z.infer<typeof transactionsSearchSchema>;
+
+/**
+ * Parses URL search params into TransactionsSearch.
+ * Invalid or missing fields fall back to defaults instead of throwing,
+ * so a stale URL (e.g. `?sort=removed_column`) still loads the page.
+ */
+export type TransactionsSearchInput = Partial<
+  Record<keyof TransactionsSearch, unknown>
+>;
+
+export function parseSearchParamsWithFallback(
+  rawSearchParams: TransactionsSearchInput,
+): TransactionsSearch {
+  function parseFieldOrDefault<FieldName extends keyof TransactionsSearch>(
+    fieldName: FieldName,
+    defaultValue: TransactionsSearch[FieldName],
+  ): TransactionsSearch[FieldName] {
+    const fieldSchema = transactionsSearchSchema.shape[fieldName];
+    const result = fieldSchema.safeParse(rawSearchParams[fieldName]);
+    return result.success
+      ? (result.data as TransactionsSearch[FieldName])
+      : defaultValue;
+  }
+
+  const rawFilters = Array.isArray(rawSearchParams.filters)
+    ? rawSearchParams.filters
+    : [];
+  const validFilters = rawFilters.filter(
+    (entry) => filterEntrySchema.safeParse(entry).success,
+  ) as FilterEntry[];
+
+  return {
+    page: parseFieldOrDefault("page", TRANSACTIONS_SEARCH_DEFAULTS.page),
+    pageSize: parseFieldOrDefault(
+      "pageSize",
+      TRANSACTIONS_SEARCH_DEFAULTS.pageSize,
+    ),
+    sort: parseFieldOrDefault("sort", TRANSACTIONS_SEARCH_DEFAULTS.sort),
+    dir: parseFieldOrDefault("dir", TRANSACTIONS_SEARCH_DEFAULTS.dir),
+    filters: validFilters,
+  };
+}
 
 const filtersFromUrlString = z.preprocess((raw) => {
   if (raw === undefined || raw === "") return [];
