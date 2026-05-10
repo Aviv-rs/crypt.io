@@ -2,18 +2,18 @@
 
 ## Stack
 
-| Layer       | Technology                                            | Role                                                                       |
-| ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------- |
-| Runtime     | Bun ≥ 1.3                                             | Server, bundler, test runner, package manager                              |
-| HTTP server | `Bun.serve()` with HTML imports                       | Routes API + serves the SPA shell. No Express, no Vite                     |
-| Frontend    | React 19                                              | UI                                                                         |
-| Styling     | Tailwind CSS v4 + shadcn/ui primitives (`base-nova`)  | Token-driven dark theme; primitives in `src/components/ui` are not edited  |
-| Server data | Drizzle ORM + `bun:sqlite`                            | Typed SQL against `database.db`                                            |
-| Client data | TanStack Query                                        | Paged fetches, cache, loading/error states, request dedup                  |
-| Compiler    | React Compiler                                        | Auto-memoization at build time; removes most need for `useMemo`/`useCallback` |
-| Icons       | `lucide-react`                                        | Stroke-based; `currentColor`; sizes 14/16/20/24                            |
-| Validation  | Zod schemas, colocated in each feature                | Single source of truth for query-param shape, coercion, and error messages |
-| Spreadsheet | Hand-written CSV writer in `src/features/transactions/server/csv.ts` | Zero-dep — assignment hard rule                              |
+| Layer       | Technology                                                           | Role                                                                          |
+| ----------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Runtime     | Bun ≥ 1.3                                                            | Server, bundler, test runner, package manager                                 |
+| HTTP server | `Bun.serve()` with HTML imports                                      | Routes API + serves the SPA shell. No Express, no Vite                        |
+| Frontend    | React 19                                                             | UI                                                                            |
+| Styling     | Tailwind CSS v4 + shadcn/ui primitives (`base-nova`)                 | Token-driven dark theme; primitives in `src/components/ui` are not edited     |
+| Server data | Drizzle ORM + `bun:sqlite`                                           | Typed SQL against `database.db`                                               |
+| Client data | TanStack Query                                                       | Paged fetches, cache, loading/error states, request dedup                     |
+| Compiler    | React Compiler                                                       | Auto-memoization at build time; removes most need for `useMemo`/`useCallback` |
+| Icons       | `lucide-react`                                                       | Stroke-based; `currentColor`; sizes 14/16/20/24                               |
+| Validation  | Zod schemas, colocated in each feature                               | Single source of truth for query-param shape, coercion, and error messages    |
+| Spreadsheet | Hand-written CSV writer in `src/features/transactions/server/csv.ts` | Zero-dep — assignment hard rule                                               |
 
 ## System Boundaries
 

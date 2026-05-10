@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "9a456dd5-5163-4949-9ff7-2bbc5273079e",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
       "name": "Transactions",
@@ -201,9 +199,7 @@
       "table": "Transactions"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Transactions_pk",
       "table": "Transactions",

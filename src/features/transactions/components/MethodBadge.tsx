@@ -33,8 +33,16 @@ const METHOD_META: Record<string, MethodMeta> = {
   gift: { label: "Gift", tone: "success", Icon: Gift },
   donate: { label: "Donate", tone: "error", Icon: Heart },
   income: { label: "Income", tone: "success", Icon: Coins },
-  income_future: { label: "Income (future)", tone: "success", Icon: TrendingUp },
-  income_lending: { label: "Income (lending)", tone: "success", Icon: HandCoins },
+  income_future: {
+    label: "Income (future)",
+    tone: "success",
+    Icon: TrendingUp,
+  },
+  income_lending: {
+    label: "Income (lending)",
+    tone: "success",
+    Icon: HandCoins,
+  },
   lost_future: { label: "Loss (future)", tone: "error", Icon: TrendingDown },
   poolin: { label: "Pool in", tone: "success", Icon: PiggyBank },
   poolout: { label: "Pool out", tone: "error", Icon: PiggyBank },

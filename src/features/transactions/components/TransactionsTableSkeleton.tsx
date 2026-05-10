@@ -34,7 +34,11 @@ const SKELETON_WIDTHS = [
   "w-32", // Date
 ] as const;
 
-export function TransactionsTableSkeleton({ rowCount = 10 }: { rowCount?: number }) {
+export function TransactionsTableSkeleton({
+  rowCount = 10,
+}: {
+  rowCount?: number;
+}) {
   return (
     <Table className="border-separate border-spacing-y-2.5">
       <TableHeader>

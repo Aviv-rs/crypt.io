@@ -25,7 +25,7 @@ Split an implementation step if it combines:
 ## Handling Missing Requirements
 
 - Do not invent product behavior not defined in the context files.
-- If a requirement is ambiguous, resolve it in the relevant context file *before* implementing.
+- If a requirement is ambiguous, resolve it in the relevant context file _before_ implementing.
 - If a requirement is missing, log it under **Open Questions** in `progress-tracker.md` and pause that unit until it's answered.
 
 ## Protected Files
@@ -49,7 +49,7 @@ Do not modify the following unless explicitly instructed:
 
 ## Visual References
 
-- `colors_and_type.css` and `README.md` from the external Aurora design folder are the source of color and type *values*. Token *names* in this codebase follow shadcn convention (see `ui-context.md`).
+- `colors_and_type.css` and `README.md` from the external Aurora design folder are the source of color and type _values_. Token _names_ in this codebase follow shadcn convention (see `ui-context.md`).
 - The generated mockup React app in `my-react-app/src/` is a layout reference only — do not import its code. Lift visual decisions; do not lift screens, components, or features that aren't in scope per `project-overview.md`.
 
 ## Keeping Docs in Sync

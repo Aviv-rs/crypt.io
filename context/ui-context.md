@@ -6,7 +6,7 @@ Dark mode in v1. The product is a dense, technical workspace for scanning transa
 
 ## Design Tokens
 
-All colors, radii, fonts, and motion live as CSS custom properties in `styles/globals.css` using shadcn/ui's standard token names. Components read tokens through Tailwind utilities or `var(--token)` — **never** hardcoded hex, rgb, or oklch values inline. The OKLCH palette and treatments come from a separate visual reference; only the *values* are imported, not the naming scheme.
+All colors, radii, fonts, and motion live as CSS custom properties in `styles/globals.css` using shadcn/ui's standard token names. Components read tokens through Tailwind utilities or `var(--token)` — **never** hardcoded hex, rgb, or oklch values inline. The OKLCH palette and treatments come from a separate visual reference; only the _values_ are imported, not the naming scheme.
 
 ## Visual References
 
@@ -14,42 +14,42 @@ The Aurora design system kit lives outside this repo: a token CSS file (color + 
 
 ## Colors
 
-| Role                           | CSS Variable             | Usage                                                  |
-| ------------------------------ | ------------------------ | ------------------------------------------------------ |
-| Page background                | `--background`           | Outer page chrome                                      |
-| Page foreground / primary text | `--foreground`           | Default text color                                     |
-| Card / panel surface           | `--card`                 | Table panel, filter bar, row cards on mobile           |
-| Card foreground                | `--card-foreground`      | Text on card surfaces                                  |
-| Popover surface                | `--popover`              | Export menu, filter dropdowns                          |
-| Popover foreground             | `--popover-foreground`   | Text inside popovers                                   |
-| Primary accent                 | `--primary`              | Primary buttons, focus ring base, brand glyph          |
-| Primary foreground             | `--primary-foreground`   | Text/icon on primary surface                           |
-| Secondary surface              | `--secondary`            | Secondary buttons, subtle fills                        |
-| Muted surface                  | `--muted`                | Empty states, table header bg, skeleton rows           |
-| Muted foreground               | `--muted-foreground`     | Helper text, column labels                             |
-| Accent                         | `--accent`               | Hover layers on rows, popover items                    |
-| Accent foreground              | `--accent-foreground`    | Text on accent                                         |
-| Border                         | `--border`               | Universal 1px divider color                            |
-| Input border                   | `--input`                | Form control borders                                   |
-| Focus ring                     | `--ring`                 | 2px focus outline                                      |
-| Destructive                    | `--destructive`          | Withdrawals, error states                              |
-| Destructive foreground         | `--destructive-foreground` | Text on destructive                                  |
-| Success                        | `--success`              | Deposits / inbound, "Succeeded" badge                  |
-| Success foreground             | `--success-foreground`   | Text on success surfaces                               |
-| Warning                        | `--warning`              | Pending states, fee badges                             |
-| Warning foreground             | `--warning-foreground`   | Text on warning surfaces                               |
-| Info                           | `--info`                 | Trades / swaps, contract calls                         |
-| Info foreground                | `--info-foreground`      | Text on info surfaces                                  |
-| Error                          | `--destructive`          | Use the existing destructive token; do not alias       |
+| Role                           | CSS Variable               | Usage                                            |
+| ------------------------------ | -------------------------- | ------------------------------------------------ |
+| Page background                | `--background`             | Outer page chrome                                |
+| Page foreground / primary text | `--foreground`             | Default text color                               |
+| Card / panel surface           | `--card`                   | Table panel, filter bar, row cards on mobile     |
+| Card foreground                | `--card-foreground`        | Text on card surfaces                            |
+| Popover surface                | `--popover`                | Export menu, filter dropdowns                    |
+| Popover foreground             | `--popover-foreground`     | Text inside popovers                             |
+| Primary accent                 | `--primary`                | Primary buttons, focus ring base, brand glyph    |
+| Primary foreground             | `--primary-foreground`     | Text/icon on primary surface                     |
+| Secondary surface              | `--secondary`              | Secondary buttons, subtle fills                  |
+| Muted surface                  | `--muted`                  | Empty states, table header bg, skeleton rows     |
+| Muted foreground               | `--muted-foreground`       | Helper text, column labels                       |
+| Accent                         | `--accent`                 | Hover layers on rows, popover items              |
+| Accent foreground              | `--accent-foreground`      | Text on accent                                   |
+| Border                         | `--border`                 | Universal 1px divider color                      |
+| Input border                   | `--input`                  | Form control borders                             |
+| Focus ring                     | `--ring`                   | 2px focus outline                                |
+| Destructive                    | `--destructive`            | Withdrawals, error states                        |
+| Destructive foreground         | `--destructive-foreground` | Text on destructive                              |
+| Success                        | `--success`                | Deposits / inbound, "Succeeded" badge            |
+| Success foreground             | `--success-foreground`     | Text on success surfaces                         |
+| Warning                        | `--warning`                | Pending states, fee badges                       |
+| Warning foreground             | `--warning-foreground`     | Text on warning surfaces                         |
+| Info                           | `--info`                   | Trades / swaps, contract calls                   |
+| Info foreground                | `--info-foreground`        | Text on info surfaces                            |
+| Error                          | `--destructive`            | Use the existing destructive token; do not alias |
 
-Token *values* live inside `:root` (dark) while `<html class="dark">` is forced; a `.light` override block can be added later without touching consumers. Status colors use semantic names (`--success`, `--warning`, `--info`, `--destructive`) instead of the shadcn default `--chart-N` slots — clearer intent at the call site.
+Token _values_ live inside `:root` (dark) while `<html class="dark">` is forced; a `.light` override block can be added later without touching consumers. Status colors use semantic names (`--success`, `--warning`, `--info`, `--destructive`) instead of the shadcn default `--chart-N` slots — clearer intent at the call site.
 
 ## Typography
 
-| Role           | Font                       | CSS Variable    | Where                                          |
-| -------------- | -------------------------- | --------------- | ---------------------------------------------- |
-| UI / body      | Inter Variable             | `--font-sans`   | Everything by default                          |
-| Mono           | JetBrains Mono Variable    | `--font-mono`   | Tx hashes, addresses, raw payloads             |
+| Role      | Font                    | CSS Variable  | Where                              |
+| --------- | ----------------------- | ------------- | ---------------------------------- |
+| UI / body | Inter Variable          | `--font-sans` | Everything by default              |
+| Mono      | JetBrains Mono Variable | `--font-mono` | Tx hashes, addresses, raw payloads |
 
 Loaded as local variable fonts via `@font-face` in `src/assets/styles/index.css` (TTFs in `src/assets/fonts/`). Sizes use Tailwind's `text-xs`/`text-sm`/`text-base`/`text-lg`/`text-2xl`/`text-4xl`. Body is `text-sm`; transactions row content is `text-[13px]` with `tabular-nums`. Weights: 400 body, 500 strong, 600 numeric emphasis. No 700 in product chrome.
 
@@ -57,13 +57,13 @@ Loaded as local variable fonts via `@font-face` in `src/assets/styles/index.css`
 
 Mapped to shadcn's `--radius` scale (`--radius`, `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl`).
 
-| Context                       | Class           |
-| ----------------------------- | --------------- |
-| Inline (chips, badges, pills) | `rounded-md`    |
-| Inputs, buttons               | `rounded-md`    |
-| Cards, table panel            | `rounded-lg`    |
-| Modals, popovers              | `rounded-xl`    |
-| Avatars, round action buttons | `rounded-full`  |
+| Context                       | Class          |
+| ----------------------------- | -------------- |
+| Inline (chips, badges, pills) | `rounded-md`   |
+| Inputs, buttons               | `rounded-md`   |
+| Cards, table panel            | `rounded-lg`   |
+| Modals, popovers              | `rounded-xl`   |
+| Avatars, round action buttons | `rounded-full` |
 
 ## Elevation
 
@@ -77,7 +77,7 @@ Each elevated surface carries a 1px `--border` outline. Sticky table header may 
 
 ## Component Library
 
-shadcn/ui (`base-nova` style) sits in `src/components/ui/`. Add new primitives via the shadcn CLI; do not hand-edit. Feature-specific composition (e.g. the table itself, filter bar, pagination) lives under `src/features/transactions/components/` and *uses* primitives but is not stored alongside them.
+shadcn/ui (`base-nova` style) sits in `src/components/ui/`. Add new primitives via the shadcn CLI; do not hand-edit. Feature-specific composition (e.g. the table itself, filter bar, pagination) lives under `src/features/transactions/components/` and _uses_ primitives but is not stored alongside them.
 
 ## Layout Patterns
 

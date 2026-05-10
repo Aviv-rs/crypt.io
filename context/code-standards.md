@@ -5,7 +5,7 @@
 - One module, one responsibility. Components render; hooks own state; controllers own request → DB → response for one route. Split a service back out only when a controller grows non-trivial business logic.
 - Fix root causes; do not add workaround branches. If a thing is broken, repair it.
 - Do not mix concerns inside a file: no SQL inside a controller, no `Response` inside a service, no fetch inside a presentational component.
-- Default to no comments. Add a one-liner only when the *why* is not obvious from the code.
+- Default to no comments. Add a one-liner only when the _why_ is not obvious from the code.
 - Delete dead code. Strip starter demo files (`APITester.tsx`, demo logos, `/api/hello*`) once their replacements land.
 
 ## TypeScript

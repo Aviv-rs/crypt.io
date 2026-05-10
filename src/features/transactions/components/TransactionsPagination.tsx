@@ -58,12 +58,11 @@ export function TransactionsPagination({
   const rangeStart = total === 0 ? 0 : (safePage - 1) * pageSize + 1;
   const rangeEnd = Math.min(safePage * pageSize, total);
 
-  const goToPage =
-    (target: number) => (event: React.MouseEvent) => {
-      event.preventDefault();
-      if (target < 1 || target > totalPages || target === safePage) return;
-      onPageChange(target);
-    };
+  const goToPage = (target: number) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (target < 1 || target > totalPages || target === safePage) return;
+    onPageChange(target);
+  };
 
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

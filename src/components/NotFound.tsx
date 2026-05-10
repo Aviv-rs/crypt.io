@@ -5,7 +5,9 @@ export function NotFound() {
   return (
     <main className="flex flex-1 items-center justify-center p-6">
       <div className="max-w-sm text-center flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Page not found</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Page not found
+        </h1>
         <p className="text-sm text-muted-foreground">
           The route you tried to open doesn't exist.
         </p>

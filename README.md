@@ -80,12 +80,12 @@ src/
 - Dark-only theme; tokens live as CSS variables in `src/assets/styles/index.css` and are bridged to Tailwind v4 via `@theme inline`. Components read tokens through utilities; no hardcoded colors.
 - Aurora-style row layout (Type / Asset / Counterparty / Network / Fee / Date), method badge with leading icon, asset cell that merges buy/sell into a single arrow form for trades. Long currency strings (NFT IDs) are truncated with the full value on hover.
 - Below `md` the table swaps to a stacked card list. Filter bar collapses behind a single Filters (n) button on mobile.
-- Row click expands a detail panel (txHash, blockHeight, smart contract, comments, *Token columns, full sender/receiver).
+- Row click expands a detail panel (txHash, blockHeight, smart contract, comments, \*Token columns, full sender/receiver).
 - Export menu offers "Current view" (sort + filters honored) and "Full dataset" (sort honored, filters ignored).
 
 ## Process
 
-This project was built spec-driven. Before writing code I wrote down the product, the architecture, the tokens + UI conventions, the implementation rules, and an ordered build plan that breaks the work into small verifiable units. Each unit ends with a tracker entry that captures what landed and any reversed decisions (e.g. "no router in v1" → "TanStack Router after URL state grew") so the *why* survives the diff.
+This project was built spec-driven. Before writing code I wrote down the product, the architecture, the tokens + UI conventions, the implementation rules, and an ordered build plan that breaks the work into small verifiable units. Each unit ends with a tracker entry that captures what landed and any reversed decisions (e.g. "no router in v1" → "TanStack Router after URL state grew") so the _why_ survives the diff.
 
 The spec lives in [`context/`](./context):
 
