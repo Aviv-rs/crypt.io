@@ -32,7 +32,8 @@ function CurrencyLabel({ currency }: { currency: string | null }) {
 }
 
 export function AssetCell({ transaction }: { transaction: Transaction }) {
-  const { method, buyAmount, buyCurrency, sellAmount, sellCurrency } = transaction;
+  const { method, buyAmount, buyCurrency, sellAmount, sellCurrency } =
+    transaction;
   const hasBuySide = buyAmount !== null;
   const hasSellSide = sellAmount !== null;
 
