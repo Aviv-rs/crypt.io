@@ -1,9 +1,10 @@
 const UTF8_BOM = "﻿";
-const NEEDS_QUOTING = /[",\r\n]/;
+const NEEDS_QUOTING = /[",\r\n]|^[=+\-@\t]/;
 
 export function escapeCsvCell(value: unknown): string {
   if (value === null || value === undefined) return "";
-  const stringValue = value instanceof Date ? value.toISOString() : String(value);
+  const stringValue =
+    value instanceof Date ? value.toISOString() : String(value);
   if (NEEDS_QUOTING.test(stringValue)) {
     return `"${stringValue.replace(/"/g, '""')}"`;
   }
