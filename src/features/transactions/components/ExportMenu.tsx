@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Download, Eye, Layers } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,22 +39,81 @@ function buildExportUrl(
   return `/api/transactions/export?${params.toString()}`;
 }
 
+function parseFilenameFromContentDisposition(
+  contentDisposition: string | null,
+): string | undefined {
+  if (!contentDisposition) return undefined;
+  const match = /filename\*?=(?:UTF-8''|")?([^";\n]+)"?/i.exec(
+    contentDisposition,
+  );
+  const raw = match?.[1];
+  if (!raw) return undefined;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+async function readExportErrorMessage(response: Response): Promise<string> {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    try {
+      const body = (await response.json()) as { error?: string };
+      if (typeof body.error === "string" && body.error.length > 0) {
+        return body.error;
+      }
+    } catch {
+      // ignore malformed JSON body
+    }
+  }
+  return `Export failed (${response.status})`;
+}
+
 export function ExportMenu({ sort, dir, filters }: Props) {
-  const triggerDownload = (scope: "view" | "all") => {
-    const anchor = document.createElement("a");
-    anchor.href = buildExportUrl(scope, { sort, dir, filters });
-    anchor.rel = "noopener";
-    anchor.download = "";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const downloadExport = async (scope: "view" | "all") => {
+    const url = buildExportUrl(scope, { sort, dir, filters });
+    setIsExporting(true);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const message = await readExportErrorMessage(response);
+        console.error(message);
+        toast.error("Export failed unexpectedly, please try again later.");
+        return;
+      }
+
+      const blob = await response.blob();
+      const filename =
+        parseFilenameFromContentDisposition(
+          response.headers.get("content-disposition"),
+        ) ?? "transactions.csv";
+
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.rel = "noopener";
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Export failed unexpectedly";
+      toast.error(message);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button size="sm">
+          <Button size="sm" loading={isExporting} loadingText="Exporting…">
             <Download data-icon="inline-start" />
             Export
           </Button>
@@ -63,11 +124,11 @@ export function ExportMenu({ sort, dir, filters }: Props) {
           <DropdownMenuLabel>Download as CSV</DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => triggerDownload("view")}>
+        <DropdownMenuItem onClick={() => void downloadExport("view")}>
           <Eye data-icon="inline-start" />
           Current view
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => triggerDownload("all")}>
+        <DropdownMenuItem onClick={() => void downloadExport("all")}>
           <Layers data-icon="inline-start" />
           Full dataset
         </DropdownMenuItem>
