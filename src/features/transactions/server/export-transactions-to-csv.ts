@@ -1,4 +1,4 @@
-const UTF8_BOM = "﻿";
+const UTF8_BOM = "﻿"; // Explicit BOM to ensure UTF-8 encoding
 const NEEDS_QUOTING = /[",\r\n]|^[=+\-@\t]/;
 
 export function escapeCsvCell(value: unknown): string {
