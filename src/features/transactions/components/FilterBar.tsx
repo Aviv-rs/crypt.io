@@ -52,23 +52,27 @@ type Props = {
 };
 
 export function FilterBar({ filters, onChange }: Props) {
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [isFilterPickerOpen, setIsFilterPickerOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const [draftKey, setDraftKey] = useState<FilterableColumn>("method");
   const [draftValue, setDraftValue] = useState("");
 
   const draftMeta = FILTER_KEYS.find((meta) => meta.key === draftKey)!;
 
-  const submitDraft = () => {
-    const trimmed = draftValue.trim();
-    if (!trimmed) return;
-    const candidate = { key: draftKey, value: trimmed };
-    const parsed = filterEntrySchema.safeParse(candidate);
-    if (!parsed.success) return;
-    const withoutSameKey = filters.filter((entry) => entry.key !== draftKey);
-    onChange([...withoutSameKey, parsed.data]);
+  const applyPendingFilter = () => {
+    const trimmedInputValue = draftValue.trim();
+    if (!trimmedInputValue) return;
+    const unvalidatedFilterFields = { key: draftKey, value: trimmedInputValue };
+    const validationResult = filterEntrySchema.safeParse(
+      unvalidatedFilterFields,
+    );
+    if (!validationResult.success) return;
+    const filtersExcludingSelectedColumn = filters.filter(
+      (entry) => entry.key !== draftKey,
+    );
+    onChange([...filtersExcludingSelectedColumn, validationResult.data]);
     setDraftValue("");
-    setPickerOpen(false);
+    setIsFilterPickerOpen(false);
   };
 
   const removeFilter = (key: FilterableColumn) => {
@@ -102,18 +106,19 @@ export function FilterBar({ filters, onChange }: Props) {
               {FILTER_LABELS[entry.key]}:
             </span>
             <span className="font-medium">{formatFilterValue(entry)}</span>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="2xs"
               aria-label={`Remove ${FILTER_LABELS[entry.key]} filter`}
               onClick={() => removeFilter(entry.key)}
               className="text-muted-foreground hover:text-foreground"
             >
               <X className="size-3" />
-            </button>
+            </Button>
           </span>
         ))}
 
-        <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
+        <Popover open={isFilterPickerOpen} onOpenChange={setIsFilterPickerOpen}>
           <PopoverTrigger
             render={
               <Button variant="outline" size="sm">
@@ -155,13 +160,13 @@ export function FilterBar({ filters, onChange }: Props) {
                 value={draftValue}
                 onChange={(event) => setDraftValue(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") submitDraft();
+                  if (event.key === "Enter") applyPendingFilter();
                 }}
               />
             </div>
             <Button
               size="sm"
-              onClick={submitDraft}
+              onClick={applyPendingFilter}
               disabled={!draftValue.trim()}
             >
               Apply filter
