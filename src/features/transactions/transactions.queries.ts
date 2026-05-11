@@ -27,14 +27,19 @@ async function fetchTransactions(
     url.searchParams.set("filters", JSON.stringify(params.filters));
   }
 
-  const response = await fetch(url, { signal });
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    throw new Error(
-      `Failed to load transactions (${response.status}): ${detail}`,
-    );
+  try {
+    const response = await fetch(url, { signal });
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(
+        `Failed to load transactions (${response.status}): ${detail}`,
+      );
+    }
+    return response.json();
+  } catch (error) {
+    console.error("[GET /api/transactions]", error);
+    throw error;
   }
-  return response.json();
 }
 
 export function transactionsQueryOptions(params: GetTransactionsRequest) {
