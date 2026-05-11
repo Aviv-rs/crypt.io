@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { TRANSACTIONS_SEARCH_DEFAULTS } from "@/features/transactions/transactions.types";
 
 export function NotFound() {
   return (
@@ -16,7 +17,7 @@ export function NotFound() {
           size="sm"
           className="self-center"
           nativeButton={false}
-          render={<Link to="/" />}
+          render={<Link to="/" search={TRANSACTIONS_SEARCH_DEFAULTS} />}
         >
           Back to transactions
         </Button>
