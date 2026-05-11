@@ -2,6 +2,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  Link,
   Outlet,
   stripSearchParams,
 } from "@tanstack/react-router";
@@ -16,6 +17,28 @@ import {
 } from "@/features/transactions/transactions.types";
 import { queryClient } from "@/queryClient";
 
+function RouterRootError({ error }: { error: unknown }) {
+  const message =
+    error instanceof Error ? error.message : "Something went wrong";
+  return (
+    <AppLayout>
+      <div className="flex min-h-[50vh] flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+        <p className="text-sm font-medium text-destructive">
+          Something went wrong
+        </p>
+        <p className="max-w-md text-xs text-muted-foreground">{message}</p>
+        <Link
+          to="/"
+          search={TRANSACTIONS_SEARCH_DEFAULTS}
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
+          Back to transactions
+        </Link>
+      </div>
+    </AppLayout>
+  );
+}
+
 const rootRoute = createRootRoute({
   component: () => (
     <AppLayout>
@@ -23,6 +46,7 @@ const rootRoute = createRootRoute({
     </AppLayout>
   ),
   notFoundComponent: NotFound,
+  errorComponent: RouterRootError,
 });
 
 const indexRoute = createRoute({

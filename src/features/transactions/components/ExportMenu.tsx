@@ -55,19 +55,12 @@ function parseFilenameFromContentDisposition(
   }
 }
 
-async function readExportErrorMessage(response: Response): Promise<string> {
-  const contentType = response.headers.get("content-type") ?? "";
-  if (contentType.includes("application/json")) {
-    try {
-      const body = (await response.json()) as { error?: string };
-      if (typeof body.error === "string" && body.error.length > 0) {
-        return body.error;
-      }
-    } catch {
-      // ignore malformed JSON body
-    }
+async function readExportErrorDetail(response: Response): Promise<string> {
+  const body = await response.json().catch(() => null);
+  if (body && typeof body.error === "string" && body.error.length > 0) {
+    return body.error;
   }
-  return `Export failed (${response.status})`;
+  return `HTTP ${response.status}`;
 }
 
 export function ExportMenu({ sort, dir, filters }: Props) {
@@ -79,8 +72,13 @@ export function ExportMenu({ sort, dir, filters }: Props) {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        const message = await readExportErrorMessage(response);
-        console.error(message);
+        const detail = await readExportErrorDetail(response);
+        console.error("[GET /api/transactions/export]", {
+          scope,
+          url,
+          status: response.status,
+          detail,
+        });
         toast.error("Export failed unexpectedly, please try again later.");
         return;
       }

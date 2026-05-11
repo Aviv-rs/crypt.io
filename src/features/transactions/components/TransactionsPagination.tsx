@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { indexRoute } from "@/router";
+import { TRANSACTIONS_SEARCH_DEFAULTS } from "@/features/transactions/transactions.types";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
 
@@ -150,7 +151,13 @@ function PaginationPageLink({
       render={
         <Link
           to={indexRoute.fullPath}
-          search={(prev) => ({ ...prev, page: pageNumber })}
+          search={(prev) => ({
+            page: pageNumber,
+            pageSize: prev.pageSize ?? TRANSACTIONS_SEARCH_DEFAULTS.pageSize,
+            sort: prev.sort ?? TRANSACTIONS_SEARCH_DEFAULTS.sort,
+            dir: prev.dir ?? TRANSACTIONS_SEARCH_DEFAULTS.dir,
+            filters: prev.filters ?? TRANSACTIONS_SEARCH_DEFAULTS.filters,
+          })}
           aria-current={isActive ? "page" : undefined}
           data-slot="pagination-link"
           data-active={isActive}
