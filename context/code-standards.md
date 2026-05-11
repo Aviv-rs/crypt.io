@@ -11,8 +11,8 @@
 ## TypeScript
 
 - `strict: true` (already on in `tsconfig.json`). No `any`. Prefer `unknown` at boundaries and narrow.
-- Validate all external input at the system boundary (request handlers) before passing it inward. Each feature exposes a Zod schema (`<feature>.schema.ts`) whose parser throws on invalid input; controllers translate `z.ZodError` into a 400 with `issues`.
-- Domain types live next to the feature in `src/features/<feature>/types/`. Both server controllers and client query files import from there. Server-only types use `import type` from `src/api/database/schema` so Drizzle types are erased at compile time.
+- Validate all external input at the system boundary (request handlers) before passing it inward. This project colocates list/export param Zod schemas in `transactions.types.ts` (e.g. `parseGetTransactionsParams`); controllers translate `z.ZodError` into `400` with `issues` where appropriate.
+- Domain types for transactions live in `transactions.types.ts` alongside Zod (e.g. `Transaction`, `GetTransactionsResponse`). Server-only row types can use `import type` from `src/api/database/schema` so Drizzle types are erased at compile time.
 - Discriminated unions over boolean flags when state has more than two shapes (e.g. sort dir as `"asc" | "desc"`).
 
 ## React (React 19)
@@ -21,7 +21,7 @@
 - Component file = one default export plus its co-located small helpers; export named subcomponents only when reused.
 - Hooks at the top, early returns next, JSX last.
 - React Compiler is enabled and handles memoization automatically. Do not write `useMemo` or `useCallback` defensively — only add manual memoization when the compiler is verified to skip a hot path and the perf cost is measured.
-- All data fetching goes through TanStack Query. Components do not call `fetch` directly; they consume `queryOptions` factories from `src/features/<feature>/<feature>.queries.ts` (e.g. `transactionsQueryOptions(params)`) via `useQuery`. The raw fetcher stays private to the queries file.
+- List data goes through TanStack Query: components use `transactionsQueryOptions` via `useQuery`; the raw list fetcher stays in `transactions.queries.ts`. **Exception:** CSV export uses `fetch` + blob + a temporary `<a download>` in `ExportMenu` so the UI can await completion, show loading, and surface errors — not a generic CRUD refetch.
 - Loading and error states are handled at the component level closest to the data, not pushed to the page root.
 
 ## Server (Bun.serve)
@@ -33,7 +33,7 @@
 
 ## Styling
 
-- Use design tokens defined in `styles/globals.css` via shadcn's standard variable names (`--background`, `--foreground`, `--card`, `--primary`, `--muted`, `--border`, `--ring`, etc.). No hardcoded hex, rgb, or oklch values inside components.
+- Use design tokens defined in `src/assets/styles/index.css` via shadcn's standard variable names (`--background`, `--foreground`, `--card`, `--primary`, `--muted`, `--border`, `--ring`, etc.). No hardcoded hex, rgb, or oklch values inside components.
 - Tailwind v4 utility classes only. No inline `style={{}}` except for dynamic values that cannot be expressed in classes.
 - Spacing follows the Tailwind scale (`p-3`, `p-4`, `p-5`, `p-6`). No arbitrary values unless tied to a token.
 - Border radius: `rounded-md` for inline (chips, badges, inputs), `rounded-lg` for cards/table panel, `rounded-xl` for modals. Mapped to shadcn's `--radius` ladder.
@@ -42,7 +42,7 @@
 ## API Routes
 
 - Validate and parse query params before any service call. Reject unknown sort columns, clamp `pageSize`, default `page` to 1.
-- Return predictable shapes: list endpoints return `{ rows, total, page, pageSize }`; export returns a CSV stream; errors return `{ error: string }`.
+- Return predictable shapes: the list endpoint returns `{ transactions, total, page, pageSize }`; export returns a CSV stream; JSON errors return `{ error: string }` (and may include `issues` for Zod validation).
 - No mutating verbs are exposed. `POST/PUT/DELETE` on transactions endpoints return 405.
 
 ## Data and Storage
@@ -55,10 +55,11 @@
 
 - `src/api/database/` — Drizzle client + schema. Server-only. Preserved path so the committed `database.db` keeps working.
 - `src/features/<feature>/` — vertical slice. Server and client live side-by-side; Bun bundles only what `frontend.tsx` transitively imports, so server files stay out of the browser bundle as long as `components/` never imports `server/`.
-  - `server/` — `<feature>.controller.ts` (route record), `<feature>.schema.ts` (Zod), feature-local helpers (e.g. `csv.ts`).
-  - `<feature>.queries.ts` — TanStack Query `queryOptions` factories. Raw `fetch` stays private here.
+  - `server/` — `<feature>.controller.ts` (handlers / route map), CSV or other server-only helpers (e.g. `export-transactions-to-csv.ts`).
+  - `<feature>.types.ts` — Zod + shared types when colocated (this project's `transactions.types.ts`).
+  - `<feature>.queries.ts` — TanStack Query `queryOptions` factories; list `fetch` stays private here.
   - `components/` — feature components. Never import from `server/`.
-  - `hooks/`, `types/`, `utils/` — as needed.
+  - `utils/` — as needed.
 - `src/components/` — cross-feature components (`AppLayout`, `AppSidebar`, `TopBar`, `Brand`).
 - `src/components/ui/` — shadcn primitives (read-only).
 - `src/lib/` — cross-feature generic utils.
@@ -67,8 +68,8 @@
 
 ## Naming
 
-- Files: kebab-case with a `.layer` suffix for non-component files (`transactions.controller.ts`, `transactions.schema.ts`, `transactions.queries.ts`); PascalCase for component files (`TransactionsTable.tsx`).
+- Files: kebab-case with a `.layer` suffix for non-component files (`transactions.controller.ts`, `transactions.types.ts`, `transactions.queries.ts`); PascalCase for component files (`TransactionsTable.tsx`).
 - Variables: no single-letter names. Loop indices are `index`, predicates take meaningful names (`row`, `transaction`, `event`, `error`), even in tight closures. The cost of one extra word is small; the cost of grepping for `r` is large.
-- API paths: lowercase, plural nouns, no abbreviations or jargon. `/api/transactions`, `/api/transactions/filters`, `/api/transactions/export`. No `facets`, no acronyms a non-engineer wouldn't recognize.
+- API paths: lowercase, plural nouns, no abbreviations or jargon. `/api/transactions`, `/api/transactions/export`. No `facets`, no acronyms a non-engineer wouldn't recognize.
 - Type names describe the thing, not the layer: `Transaction`, `TransactionsPage`, `Filters` — not `TransactionDTO`, `ITransaction`.
 - The product name is **Crypt.io** everywhere user-visible. No reference to any external organization in code, comments, copy, or commits.

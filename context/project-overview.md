@@ -33,7 +33,7 @@ Single-page web app that renders a paginated, sortable, filterable view over a p
 
 ### CSV Export (zero-dep)
 
-- User picks scope from a dropdown: **Current view** (honors active filters + sort) or **Full dataset** (entire table by id).
+- User picks scope from a dropdown: **Current view** (honors active filters + sort) or **Full dataset** (all rows; same sort, filters ignored).
 - Server hand-writes RFC-4180 CSV bytes with a UTF-8 BOM. No `xlsx`/`exceljs`/`sheetjs`.
 - Streamed response — never buffer the full dataset in memory.
 
@@ -56,8 +56,11 @@ Single-page web app that renders a paginated, sortable, filterable view over a p
 - Authentication, multi-tenant, real BloxTax integrations.
 - Light theme, i18n, charts, dashboards beyond the single transactions page.
 - Real `.xlsx` (OOXML zip) format — explicitly rejected in favor of `.csv` for honesty and time.
-- Router / global state / data-fetching / form libraries.
 - Virtualized rows — server paging is the contract.
+
+### Stack note (evolved during build)
+
+Early scope text ruled out a router and “data-fetching libraries” to keep v1 small. As URL state grew (`page`, `pageSize`, `sort`, `dir`, JSON `filters`), the project adopted **TanStack Router** (typed search + loaders) and **TanStack Query** (cache, dedup, `keepPreviousData`). That stays within the assignment: list and export remain server-driven; CSV generation stays zero-dep.
 
 ## Success Criteria
 

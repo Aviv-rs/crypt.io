@@ -6,7 +6,7 @@ Dark mode in v1. The product is a dense, technical workspace for scanning transa
 
 ## Design Tokens
 
-All colors, radii, fonts, and motion live as CSS custom properties in `styles/globals.css` using shadcn/ui's standard token names. Components read tokens through Tailwind utilities or `var(--token)` — **never** hardcoded hex, rgb, or oklch values inline. The OKLCH palette and treatments come from a separate visual reference; only the _values_ are imported, not the naming scheme.
+All colors, radii, fonts, and motion live as CSS custom properties in `src/assets/styles/index.css` using shadcn/ui's standard token names. Components read tokens through Tailwind utilities or `var(--token)` — **never** hardcoded hex, rgb, or oklch values inline. The OKLCH palette and treatments come from a separate visual reference; only the _values_ are imported, not the naming scheme.
 
 ## Visual References
 

@@ -28,8 +28,8 @@ bun run dev
 Open <http://localhost:3000>. The committed `src/api/database/database.db` is used as-is — no migration or seeding needed.
 
 ```bash
-bun test          # csv writer + params parser tests
-bunx tsc --noEmit # typecheck
+bun run test       # csv writer + params parser tests
+bun run typecheck  # TypeScript noEmit
 ```
 
 ## Architecture
